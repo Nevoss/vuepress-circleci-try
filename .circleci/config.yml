@@ -45,7 +45,7 @@ jobs:
                 name: Publish package
                 command: npm publish
 
-    docs-build:
+    docs-build-deploy:
         <<: *defaults
         steps:
             - checkout
@@ -63,24 +63,6 @@ jobs:
                 key: v1-dependencies-{{ checksum "package.json" }}
 
             - run:
-                name: Build docs
-                command: npm run docs:build
-
-            - persist_to_workspace:
-                root: ~/repo/docs/.vuepress
-                paths: .
-
-    docs-deploy:
-        <<: *defaults
-        steps:
-            - attach_workspace:
-                at: ~/repo/docs/.vuepress
-
-            - run:
-                name: install gh-pages
-                command: npm install -g --silent gh-pages@2.0.1
-
-            - run:
                 name: Configure dependencies
                 command: |
                     git config user.email "nevos12@gmail.com"
@@ -88,7 +70,7 @@ jobs:
 
             - run:
                 name: Deploy docs to gh-pages branch
-                command: gh-pages --dist ~/repo/docs/.vuepress/dist
+                command: npm run docs:deploy
 
 
 workflows:
@@ -110,13 +92,7 @@ workflows:
 
     docs:
         jobs:
-            - docs-build:
-                filters:
-                    branches:
-                        only: master
-            - docs-deploy:
-                requires:
-                    - docs-build
+            - docs-build-deploy:
                 filters:
                     branches:
                         only: master
