@@ -45,6 +45,42 @@ jobs:
                 name: Publish package
                 command: npm publish
 
+    docs-build:
+        <<: *defaults
+        steps:
+            - checkout
+
+            - restore_cache:
+                keys:
+                    - v1-dependencies-{{ checksum "package.json" }}
+                    - v1-dependencies-
+
+            - run: npm install
+
+            - save_cache:
+                paths:
+                    - node_modules
+                key: v1-dependencies-{{ checksum "package.json" }}
+
+            - run:
+                name: Build docs
+                command: npm run docs:build
+
+            - persist_to_workspace:
+                root: ~/repo/docs
+                paths: .
+
+    docs-deploy:
+        <<: *defaults
+        steps:
+            - attach_workspace:
+                at: ~/repo/docs
+
+            run:
+                name: try
+                command: echo "good"
+
+
 workflows:
     version: 2
     test-deploy:
@@ -61,3 +97,16 @@ workflows:
                         only: /^v.*/
                     branches:
                         ignore: /.*/
+
+    docs:
+        jobs:
+            - docs-build:
+                filters:
+                    branches:
+                        only: master
+            - docs-deploy:
+                requires:
+                    - test
+                filters:
+                    branches:
+                        only: master
