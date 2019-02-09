@@ -67,18 +67,25 @@ jobs:
                 command: npm run docs:build
 
             - persist_to_workspace:
-                root: ~/repo/docs
+                root: ~/repo/docs/.vuepress
                 paths: .
 
     docs-deploy:
         <<: *defaults
         steps:
             - attach_workspace:
-                at: ~/repo/docs
+                at: ~/repo/docs/.vuepress
 
             - run:
-                name: try
-                command: echo "good"
+                name: Install and configure dependencies
+                command: |
+                    npm install -g --silent gh-pages@2.0.1
+                    git config user.email "ci-build@klukas.net"
+                    git config user.name "ci-build"
+
+            - run:
+                name: Deploy docs to gh-pages branch
+                command: gh-pages --dist ~/repo/docs/.vuepress/dist
 
 
 workflows:
