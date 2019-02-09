@@ -76,7 +76,7 @@ jobs:
             - attach_workspace:
                 at: ~/repo/docs
 
-            run:
+            - run:
                 name: try
                 command: echo "good"
 
