@@ -77,9 +77,12 @@ jobs:
                 at: ~/repo/docs/.vuepress
 
             - run:
-                name: Install and configure dependencies
+                name: install gh-pages
+                command: npm install -g --silent gh-pages@2.0.1
+
+            - run:
+                name: Configure dependencies
                 command: |
-                    npm install -g --silent gh-pages@2.0.1
                     git config user.email "nevos12@gmail.com"
                     git config user.name "Nevo"
 
